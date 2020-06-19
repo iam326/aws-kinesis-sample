@@ -3,7 +3,7 @@ Transform: AWS::Serverless-2016-10-31
 Description: AWS Kinesis Sample
 
 Parameters:
-  NamePrefix:
+  KinesisStreamName:
     Type: String
 
 Resources:
@@ -26,7 +26,7 @@ Resources:
   KinesisStream:
     Type: AWS::Kinesis::Stream
     Properties:
-      Name: !Sub "${NamePrefix}-kinesis-stream"
+      Name: !Ref KinesisStreamName
       RetentionPeriodHours: 24
       ShardCount: 1
 

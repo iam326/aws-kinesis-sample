@@ -2,7 +2,8 @@
 
 set -euo pipefail
 
-PROJECT_NAME="aws-kinesis-sample"
+source ../config.sh
+
 STACK_NAME="${PROJECT_NAME}-backend"
 ARTIFACT_BUCKET_NAME="iam326.${PROJECT_NAME}-artifact"
 
@@ -17,6 +18,6 @@ sam deploy \
   --stack-name ${STACK_NAME} \
   --capabilities CAPABILITY_IAM \
   --parameter-overrides \
-    NamePrefix=${PROJECT_NAME}
+    KinesisStreamName=${KINESIS_STREAM_NAME}
 
 rm packaged.yaml
