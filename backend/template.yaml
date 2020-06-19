@@ -2,6 +2,10 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: AWS Kinesis Sample
 
+Parameters:
+  NamePrefix:
+    Type: String
+
 Resources:
   LambdaFunction:
     Type: AWS::Serverless::Function
@@ -22,6 +26,8 @@ Resources:
   KinesisStream:
     Type: AWS::Kinesis::Stream
     Properties:
+      Name: !Sub "${NamePrefix}-kinesis-stream"
+      RetentionPeriodHours: 24
       ShardCount: 1
 
 Outputs:
