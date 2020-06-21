@@ -84,7 +84,11 @@ Resources:
           IntervalInSeconds: 60
           SizeInMBs: 5
         CompressionFormat: UNCOMPRESSED
-        Prefix: tests
+        # Prefix: tests
+          # => testsYYYY/MM/DD/HH/${KinesisFirehoseName}-1-yyyy-mm-dd-hh-mm-ss-***
+        Prefix: 'tests2/year=!{timestamp:YYYY}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/'
+          # => tests2/year=YYYY/month=MM/day=DD/hour=HH/...
+          # {timestamp:xxxx} などにしてもErrorにはならない (+0000に変換された)
         ErrorOutputPrefix: errors
         RoleARN: !GetAtt deliveryRole.Arn
 
