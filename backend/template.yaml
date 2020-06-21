@@ -3,10 +3,52 @@ Transform: AWS::Serverless-2016-10-31
 Description: AWS Kinesis Sample
 
 Parameters:
+  FirehoseDestBucketName:
+    Type: String
   KinesisStreamName:
+    Type: String
+  KinesisFirehoseName:
     Type: String
 
 Resources:
+  FirehoseDestBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: !Ref FirehoseDestBucketName
+      AccessControl: Private
+
+  deliveryRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ''
+            Effect: Allow
+            Principal:
+              Service: firehose.amazonaws.com
+            Action: 'sts:AssumeRole'
+            Condition:
+              StringEquals:
+                'sts:ExternalId': !Ref 'AWS::AccountId'
+      Path: "/"
+      Policies:
+        - PolicyName: firehose_delivery_policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 's3:AbortMultipartUpload'
+                  - 's3:GetBucketLocation'
+                  - 's3:GetObject'
+                  - 's3:ListBucket'
+                  - 's3:ListBucketMultipartUploads'
+                  - 's3:PutObject'
+                Resource:
+                  - !Sub 'arn:aws:s3:::${FirehoseDestBucket}'
+
   LambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -29,6 +71,21 @@ Resources:
       Name: !Ref KinesisStreamName
       RetentionPeriodHours: 24
       ShardCount: 1
+
+  KinesisFirehose:
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+      DeliveryStreamName: !Ref KinesisFirehoseName
+      DeliveryStreamType: DirectPut
+      S3DestinationConfiguration:
+        BucketARN: !Sub 'arn:aws:s3:::${FirehoseDestBucket}'
+        BufferingHints:
+          IntervalInSeconds: 60
+          SizeInMBs: 5
+        CompressionFormat: UNCOMPRESSED
+        Prefix: tests
+        ErrorOutputPrefix: errors
+        RoleARN: !GetAtt deliveryRole.Arn
 
 Outputs:
   FunctionName:

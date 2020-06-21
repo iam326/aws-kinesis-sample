@@ -18,6 +18,8 @@ sam deploy \
   --stack-name ${STACK_NAME} \
   --capabilities CAPABILITY_IAM \
   --parameter-overrides \
-    KinesisStreamName=${KINESIS_STREAM_NAME}
+    FirehoseDestBucketName=${FIREHOSE_DEST_BUCKET_NAME} \
+    KinesisStreamName=${KINESIS_STREAM_NAME} \
+    KinesisFirehoseName=${KINESIS_FIREHOSE_NAME}
 
 rm packaged.yaml
