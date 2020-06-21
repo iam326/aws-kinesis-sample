@@ -48,6 +48,7 @@ Resources:
                   - 's3:PutObject'
                 Resource:
                   - !Sub 'arn:aws:s3:::${FirehoseDestBucket}'
+                  - !Sub 'arn:aws:s3:::${FirehoseDestBucket}/*'
 
   LambdaFunction:
     Type: AWS::Serverless::Function
